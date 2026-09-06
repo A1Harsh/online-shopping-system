@@ -62,3 +62,18 @@ jobs:
           name: JAYVEERMart-Android-APK
           path: build-output/JAYVEERMart-debug.apk
           retention-days: 30
+
+      - name: Publish Direct APK Download Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: latest-apk
+          name: 'JAYVEERMart Android APK (Latest)'
+          body: |
+            ### 📱 JAYVEERMart Android APK
+            Latest APK generated from commit `${{ github.sha }}`.
+
+            Download **`JAYVEERMart-debug.apk`** directly to your phone.
+          files: build-output/JAYVEERMart-debug.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
