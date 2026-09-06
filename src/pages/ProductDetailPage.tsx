@@ -54,17 +54,41 @@ export const ProductDetailPage: React.FC = () => {
     setTimeout(() => setWishlistAnim(false), 300);
   };
 
-  // Interactive Image Zoom State
+  // Interactive Image Zoom State (WooCommerce / jQuery zoomImg pattern)
   const [isZoomed, setIsZoomed] = useState(false);
-  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [zoomOffset, setZoomOffset] = useState({ left: 0, top: 0 });
+  const [containerDim, setContainerDim] = useState({ width: 0, height: 0 });
   const imageContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseEnter = () => {
+    if (imageContainerRef.current) {
+      const rect = imageContainerRef.current.getBoundingClientRect();
+      setContainerDim({ width: rect.width, height: rect.height });
+    }
+    setIsZoomed(true);
+  };
 
   const handleImageMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imageContainerRef.current) return;
     const rect = imageContainerRef.current.getBoundingClientRect();
-    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
-    setZoomPos({ x, y });
+    if (containerDim.width !== rect.width || containerDim.height !== rect.height) {
+      setContainerDim({ width: rect.width, height: rect.height });
+    }
+    const ratioX = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const ratioY = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+
+    const zoomScale = 2.2;
+    const zoomedWidth = rect.width * zoomScale;
+    const zoomedHeight = rect.height * zoomScale;
+
+    setZoomOffset({
+      left: -ratioX * (zoomedWidth - rect.width),
+      top: -ratioY * (zoomedHeight - rect.height),
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setIsZoomed(false);
   };
 
   // Review Form State
@@ -161,9 +185,9 @@ export const ProductDetailPage: React.FC = () => {
         <div>
           <div
             ref={imageContainerRef}
-            onMouseEnter={() => setIsZoomed(true)}
+            onMouseEnter={handleMouseEnter}
             onMouseMove={handleImageMouseMove}
-            onMouseLeave={() => setIsZoomed(false)}
+            onMouseLeave={handleMouseLeave}
             style={{
               width: '100%',
               height: '420px',
@@ -182,6 +206,7 @@ export const ProductDetailPage: React.FC = () => {
               touchAction: 'none',
             }}
           >
+            {/* Base Image */}
             <img
               src={getProductImageUrl(currentImage)}
               alt={product.product_title}
@@ -192,13 +217,37 @@ export const ProductDetailPage: React.FC = () => {
                 maxHeight: '350px',
                 maxWidth: '90%',
                 objectFit: 'contain',
-                transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
-                transform: isZoomed ? 'scale(2.3)' : 'scale(1)',
-                transition: isZoomed ? 'transform-origin 0.05s ease-out, transform 0.2s ease-out' : 'transform 0.3s ease-out',
+                display: 'block',
                 pointerEvents: 'none',
-                willChange: 'transform, transform-origin',
               }}
             />
+
+            {/* High-Resolution Overlaid Zoom Image (.zoomImg) */}
+            <img
+              role="presentation"
+              alt=""
+              src={getProductImageUrl(currentImage)}
+              className="zoomImg"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60';
+              }}
+              style={{
+                position: 'absolute',
+                top: `${zoomOffset.top}px`,
+                left: `${zoomOffset.left}px`,
+                width: containerDim.width ? `${containerDim.width * 2.2}px` : 'auto',
+                height: containerDim.height ? `${containerDim.height * 2.2}px` : 'auto',
+                maxWidth: 'none',
+                maxHeight: 'none',
+                objectFit: 'contain',
+                opacity: isZoomed ? 1 : 0,
+                pointerEvents: 'none',
+                transition: 'opacity 0.15s ease',
+                backgroundColor: '#ffffff',
+                zIndex: 1,
+              }}
+            />
+
             {product.featured && (
               <span className="badge badge-primary" style={{ position: 'absolute', top: '16px', left: '16px', zIndex: 2, pointerEvents: 'none' }}>
                 Featured Choice
