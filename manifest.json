@@ -3,16 +3,28 @@
   "name": "JAYVEERMart - Modern E-Commerce Platform",
   "icons": [
     {
-      "src": "favicon.svg",
+      "src": "/favicon.svg",
       "type": "image/svg+xml",
       "sizes": "192x192 512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
       "purpose": "any maskable"
     }
   ],
-  "start_url": "./",
+  "start_url": "/",
   "background_color": "#0f172a",
   "theme_color": "#4f46e5",
   "display": "standalone",
   "orientation": "portrait",
-  "scope": "./"
+  "scope": "/"
 }
