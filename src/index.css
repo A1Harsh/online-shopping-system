@@ -159,8 +159,8 @@ button, input, select, textarea {
 /* Glassmorphism & Cards */
 .glass-panel {
   background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
@@ -465,7 +465,6 @@ button, input, select, textarea {
     display: flex !important;
     overflow-x: auto !important;
     scroll-snap-type: x mandatory !important;
-    -webkit-overflow-scrolling: touch !important;
     gap: 0.5rem !important;
     padding-bottom: 4px !important;
   }

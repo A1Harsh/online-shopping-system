@@ -25,6 +25,7 @@ export const Header: React.FC = () => {
   const { user } = useAuth();
   const { toggleCart, itemCount: cartCount, total: cartTotal } = useCart();
   const { itemCount: wishCount } = useWishlist();
+  const { products } = useProducts();
   const { t, translateCategory } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState('');

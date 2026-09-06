@@ -52,7 +52,7 @@ interface BannerSlide {
 }
 
 export const HeroBannerSlider: React.FC = () => {
-  const { currentLanguage } = useLanguage();
+  const { language } = useLanguage();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ hours: 7, minutes: 48, seconds: 26 });
