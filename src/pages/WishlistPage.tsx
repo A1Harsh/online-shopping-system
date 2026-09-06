@@ -58,7 +58,7 @@ export const WishlistPage: React.FC = () => {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+      <div className="store-products-grid">
         {wishlistItems.map((item) => (
           <div
             key={item.id}

@@ -25,8 +25,7 @@ export const Header: React.FC = () => {
   const { user } = useAuth();
   const { toggleCart, itemCount: cartCount, total: cartTotal } = useCart();
   const { itemCount: wishCount } = useWishlist();
-  const { products, categories } = useProducts();
-  const { t } = useLanguage();
+  const { t, translateCategory } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
@@ -82,9 +81,9 @@ export const Header: React.FC = () => {
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ backgroundColor: '#f59e0b', color: '#0f172a', padding: '2px 6px', borderRadius: '4px', fontWeight: 800, fontSize: '0.6875rem' }}>
-              OFFER
+              {t('offerBadge')}
             </span>
-            <span>Get 20% OFF with code <strong>SUPER20</strong> • Free Shipping on orders ₹1,000+</span>
+            <span>{t('topOfferBanner')}</span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }} className="hide-mobile">
@@ -110,23 +109,19 @@ export const Header: React.FC = () => {
         }}
       >
         {/* Brand Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', minWidth: 0, flexShrink: 0 }}>
-          <div
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', minWidth: 0, flexShrink: 0 }}>
+          <img
+            src={`${import.meta.env.BASE_URL}jayveermart-logo.png`}
+            alt="JAYVEERMart"
             style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '9px',
-              background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              boxShadow: '0 3px 8px rgba(79, 70, 229, 0.3)',
+              width: '40px',
+              height: '40px',
+              borderRadius: '10px',
+              objectFit: 'cover',
+              boxShadow: '0 3px 10px rgba(79, 70, 229, 0.25)',
               flexShrink: 0,
             }}
-          >
-            <ShoppingBag size={20} />
-          </div>
+          />
           <div>
             <span style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.03em', fontFamily: 'var(--font-heading)', color: '#0f172a', whiteSpace: 'nowrap' }}>
               JAYVEER<span style={{ color: 'var(--primary)' }}>Mart</span>
@@ -257,7 +252,7 @@ export const Header: React.FC = () => {
             to="/wishlist"
             className="btn btn-outline btn-icon hide-mobile"
             style={{ position: 'relative', border: 'none' }}
-            title="Wishlist"
+            title={t('wishlist')}
           >
             <Heart size={22} />
             {wishCount > 0 && (
@@ -401,7 +396,7 @@ export const Header: React.FC = () => {
                   onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
                   onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                 >
-                  <ShieldCheck size={16} /> Admin Portal
+                  <ShieldCheck size={16} /> {t('adminPortal')}
                 </Link>
               </div>
             )}
@@ -648,26 +643,20 @@ export const Header: React.FC = () => {
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div
+                <img
+                  src={`${import.meta.env.BASE_URL}jayveermart-logo.png`}
+                  alt="JAYVEERMart"
                   style={{
                     width: '46px',
                     height: '46px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1.2rem',
-                    fontWeight: 800,
-                    color: 'white',
+                    borderRadius: '12px',
+                    objectFit: 'cover',
                     boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
                   }}
-                >
-                  {user?.first_name ? user.first_name[0].toUpperCase() : 'U'}
-                </div>
+                />
                 <div>
                   <div style={{ fontWeight: 800, fontSize: '1.05rem', fontFamily: 'var(--font-heading)' }}>
-                    {user?.first_name} {user?.last_name}
+                    {user?.first_name ? `${user.first_name} ${user.last_name}` : 'JAYVEERMart'}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
                     {user?.email || 'customer@jayveermart.com'}
@@ -687,7 +676,7 @@ export const Header: React.FC = () => {
             {/* Quick Navigation Links */}
             <div style={{ padding: '1rem', borderBottom: '1px solid #f1f5f9' }}>
               <div style={{ fontSize: '0.6875rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
-                Quick Navigation
+                {t('quickNavigation')}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <Link
@@ -703,7 +692,7 @@ export const Header: React.FC = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '10px', textDecoration: 'none', color: '#1e293b', fontWeight: 600, fontSize: '0.9375rem' }}
                 >
-                  <Package size={18} color="#4f46e5" /> {t('navStore')} & Catalog
+                  <Package size={18} color="#4f46e5" /> {t('navStore')}
                 </Link>
 
                 <Link
@@ -711,7 +700,7 @@ export const Header: React.FC = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '10px', textDecoration: 'none', color: '#1e293b', fontWeight: 600, fontSize: '0.9375rem' }}
                 >
-                  <Truck size={18} color="#059669" /> {t('myOrders')} & Tracking
+                  <Truck size={18} color="#059669" /> {t('myOrders')}
                 </Link>
 
                 <Link
@@ -719,7 +708,7 @@ export const Header: React.FC = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '10px', textDecoration: 'none', color: '#1e293b', fontWeight: 600, fontSize: '0.9375rem' }}
                 >
-                  <UserIcon size={18} color="#d97706" /> {t('myProfile')} & Addresses
+                  <UserIcon size={18} color="#d97706" /> {t('myProfile')}
                 </Link>
 
                 <Link
@@ -735,7 +724,7 @@ export const Header: React.FC = () => {
             {/* Categories Section */}
             <div style={{ padding: '1rem', borderBottom: '1px solid #f1f5f9', flex: 1 }}>
               <div style={{ fontSize: '0.6875rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
-                Shop by Categories
+                {t('shopByCategories')}
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 {[

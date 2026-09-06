@@ -7,6 +7,7 @@ import { useWishlist } from '../../context/WishlistContext';
 import { useProducts } from '../../context/ProductContext';
 import { formatCurrency } from '../../utils/formatters';
 import { StarRating } from './StarRating';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface QuickViewModalProps {
   product: Product | null;
@@ -14,6 +15,7 @@ interface QuickViewModalProps {
 }
 
 export const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose }) => {
+  const { t, translateCategory } = useLanguage();
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { getCategoryById, getBrandById } = useProducts();
@@ -117,7 +119,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose
           {/* Details Column */}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <span className="badge badge-primary">{category?.cat_title}</span>
+              <span className="badge badge-primary">{category ? translateCategory(category.cat_title) : ''}</span>
               {brand && <span className="badge badge-neutral">{brand.brand_title}</span>}
             </div>
 
@@ -128,7 +130,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
               <StarRating rating={product.rating || 4.5} size={16} showValue />
               <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-                • ({product.review_count || 15} reviews)
+                • ({product.review_count || 15} {t('reviewsCount')})
               </span>
             </div>
 
@@ -143,7 +145,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose
             {/* Quantity Selector & Add to Cart */}
             <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>Quantity:</span>
+                <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{t('quantity')}</span>
                 <div style={{ display: 'flex', alignItems: 'center', border: '1.5px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
                   <button
                     type="button"
@@ -162,7 +164,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose
                   </button>
                 </div>
                 <span style={{ fontSize: '0.8125rem', color: product.product_qty > 0 ? 'var(--success)' : 'var(--danger)' }}>
-                  {product.product_qty > 0 ? `${product.product_qty} in stock` : 'Out of stock'}
+                  {product.product_qty > 0 ? `${product.product_qty} ${t('inStock')}` : t('outOfStock')}
                 </span>
               </div>
 
@@ -175,11 +177,11 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose
                 >
                   {addedAnim ? (
                     <>
-                      <Check size={18} /> Added to Cart!
+                      <Check size={18} /> {t('addedToCart')}
                     </>
                   ) : (
                     <>
-                      <ShoppingBag size={18} /> Add to Cart
+                      <ShoppingBag size={18} /> {t('addToCart')}
                     </>
                   )}
                 </button>
@@ -188,8 +190,8 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose
                   type="button"
                   onClick={() => toggleWishlist(product)}
                   className="btn"
-                  title={inWishlist ? 'Remove from Wishlist' : 'Save to Wishlist'}
-                  aria-label={inWishlist ? 'Remove from Wishlist' : 'Save to Wishlist'}
+                  title={inWishlist ? t('removeFromWishlist') : t('saveToWishlist')}
+                  aria-label={inWishlist ? t('removeFromWishlist') : t('saveToWishlist')}
                   style={{
                     padding: '0.75rem 1rem',
                     display: 'flex',
@@ -211,7 +213,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose
                     fill={inWishlist ? '#ef4444' : 'none'}
                     color={inWishlist ? '#ef4444' : 'currentColor'}
                   />
-                  <span>{inWishlist ? 'Saved' : 'Wishlist'}</span>
+                  <span>{t('wishlist')}</span>
                 </button>
               </div>
 
@@ -229,7 +231,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose
                   marginTop: '4px',
                 }}
               >
-                View Complete Specifications & Reviews <ArrowRight size={16} />
+                {t('viewFullDetails')} <ArrowRight size={16} />
               </Link>
             </div>
           </div>

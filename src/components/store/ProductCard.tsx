@@ -18,7 +18,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { getCategoryById, getBrandById } = useProducts();
-  const { t } = useLanguage();
+  const { t, translateCategory } = useLanguage();
   const [addedAnim, setAddedAnim] = React.useState(false);
 
   const category = getCategoryById(product.product_cat);
@@ -61,13 +61,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
         borderRadius: 'var(--radius-lg)',
         transition: 'all 0.25s ease',
         overflow: 'hidden',
+        padding: 0,
       }}
     >
       {/* Top Badges */}
       <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 3, display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {product.featured && <span className="badge badge-primary" style={{ fontSize: '0.6875rem', padding: '2px 8px' }}>{t('featured')}</span>}
         {isOutOfStock && <span className="badge badge-danger" style={{ fontSize: '0.6875rem', padding: '2px 8px' }}>{t('outOfStock')}</span>}
-        {isLowStock && !isOutOfStock && <span className="badge badge-warning" style={{ fontSize: '0.6875rem', padding: '2px 8px' }}>Only {product.product_qty} Left</span>}
+        {isLowStock && !isOutOfStock && <span className="badge badge-warning" style={{ fontSize: '0.6875rem', padding: '2px 8px' }}>{t('onlyUnitsLeft', { qty: product.product_qty })}</span>}
       </div>
 
       {/* Action Buttons Floating */}
@@ -75,8 +76,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
         <button
           type="button"
           onClick={handleWishlistToggle}
-          title={inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
-          aria-label={inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+          title={inWishlist ? t('removeFromWishlist') : t('saveToWishlist')}
+          aria-label={inWishlist ? t('removeFromWishlist') : t('saveToWishlist')}
           style={{
             background: inWishlist ? '#fef2f2' : 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(4px)',
@@ -100,7 +101,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
           <button
             type="button"
             onClick={handleQuickView}
-            title="Quick View"
+            title={t('quickView')}
+            aria-label={t('quickView')}
             className="hide-mobile"
             style={{
               background: 'rgba(255, 255, 255, 0.95)',
@@ -158,7 +160,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
       <div className="product-card-body" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '1rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
           <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            {category?.cat_title || 'General'}
+            {category ? translateCategory(category.cat_title) : t('allCategories')}
           </span>
           {brand && (
             <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
@@ -196,9 +198,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
         </div>
 
         {/* Price & Action */}
-        <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid var(--border-light)' }}>
-          <div>
-            <span className="product-card-price" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', fontFamily: 'var(--font-heading)' }}>
+        <div
+          className="product-card-action-row"
+          style={{
+            marginTop: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingTop: '0.5rem',
+            borderTop: '1px solid var(--border-light)',
+            gap: '6px',
+          }}
+        >
+          <div style={{ minWidth: 0, flexShrink: 1, overflow: 'hidden' }}>
+            <span className="product-card-price" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', fontFamily: 'var(--font-heading)', whiteSpace: 'nowrap' }}>
               {formatCurrency(product.product_price)}
             </span>
           </div>
@@ -207,22 +220,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
             type="button"
             onClick={handleAddToCart}
             disabled={isOutOfStock}
-            className={`btn btn-sm ${addedAnim ? 'btn-success' : 'btn-primary'}`}
+            className={`btn btn-sm ${addedAnim ? 'btn-success' : 'btn-primary'} product-card-btn`}
+            title={addedAnim ? t('addedToCart') : t('addToCart')}
+            aria-label={addedAnim ? t('addedToCart') : t('addToCart')}
             style={{
               padding: '0.4rem 0.75rem',
-              borderRadius: 'var(--radius-md)',
+              borderRadius: 'var(--radius-full)',
               fontSize: '0.75rem',
               fontWeight: 700,
               opacity: isOutOfStock ? 0.6 : 1,
+              flexShrink: 0,
             }}
           >
             {addedAnim ? (
               <>
-                <Check size={14} /> Added
+                <Check size={14} /> <span className="product-card-btn-text">{t('addedToCart')}</span>
               </>
             ) : (
               <>
-                <ShoppingBag size={14} /> Add
+                <ShoppingBag size={14} /> <span className="product-card-btn-text">{t('addToCart')}</span>
               </>
             )}
           </button>

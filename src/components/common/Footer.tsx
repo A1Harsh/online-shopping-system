@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Mail, Phone, MapPin, ShieldCheck, Truck, RefreshCw, Headphones } from 'lucide-react';
+import { Mail, Phone, MapPin, ShieldCheck, Truck, RefreshCw, Headphones } from 'lucide-react';
 import { useProducts } from '../../context/ProductContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export const Footer: React.FC = () => {
   const { categories } = useProducts();
+  const { t, translateCategory } = useLanguage();
 
   return (
     <footer style={{ backgroundColor: '#0f172a', color: '#cbd5e1', borderTop: '1px solid #1e293b', marginTop: '4rem' }}>
@@ -17,8 +19,8 @@ export const Footer: React.FC = () => {
                 <Truck size={24} />
               </div>
               <div>
-                <h4 style={{ color: 'white', fontSize: '0.95rem', fontWeight: 600 }}>Free Express Delivery</h4>
-                <p style={{ fontSize: '0.8125rem', color: '#94a3b8' }}>On all orders above ₹1,000</p>
+                <h4 style={{ color: 'white', fontSize: '0.95rem', fontWeight: 600 }}>{t('freeExpressDelivery')}</h4>
+                <p style={{ fontSize: '0.8125rem', color: '#94a3b8' }}>{t('deliverySub')}</p>
               </div>
             </div>
 
@@ -27,8 +29,8 @@ export const Footer: React.FC = () => {
                 <ShieldCheck size={24} />
               </div>
               <div>
-                <h4 style={{ color: 'white', fontSize: '0.95rem', fontWeight: 600 }}>100% Genuine Guarantee</h4>
-                <p style={{ fontSize: '0.8125rem', color: '#94a3b8' }}>Direct from authorized brands</p>
+                <h4 style={{ color: 'white', fontSize: '0.95rem', fontWeight: 600 }}>{t('genuineGuarantee')}</h4>
+                <p style={{ fontSize: '0.8125rem', color: '#94a3b8' }}>{t('genuineSub')}</p>
               </div>
             </div>
 
@@ -37,8 +39,8 @@ export const Footer: React.FC = () => {
                 <RefreshCw size={24} />
               </div>
               <div>
-                <h4 style={{ color: 'white', fontSize: '0.95rem', fontWeight: 600 }}>7-Day Easy Returns</h4>
-                <p style={{ fontSize: '0.8125rem', color: '#94a3b8' }}>Instant replacement or refund</p>
+                <h4 style={{ color: 'white', fontSize: '0.95rem', fontWeight: 600 }}>{t('sevenDayReturns')}</h4>
+                <p style={{ fontSize: '0.8125rem', color: '#94a3b8' }}>{t('returnsSub')}</p>
               </div>
             </div>
 
@@ -47,8 +49,8 @@ export const Footer: React.FC = () => {
                 <Headphones size={24} />
               </div>
               <div>
-                <h4 style={{ color: 'white', fontSize: '0.95rem', fontWeight: 600 }}>24/7 AI & Human Support</h4>
-                <p style={{ fontSize: '0.8125rem', color: '#94a3b8' }}>Always here to help you</p>
+                <h4 style={{ color: 'white', fontSize: '0.95rem', fontWeight: 600 }}>{t('support247')}</h4>
+                <p style={{ fontSize: '0.8125rem', color: '#94a3b8' }}>{t('supportSub')}</p>
               </div>
             </div>
           </div>
@@ -60,21 +62,18 @@ export const Footer: React.FC = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2.5rem' }}>
           {/* Brand Info */}
           <div>
-            <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', marginBottom: '1rem' }}>
-              <div
+            <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', marginBottom: '1rem' }}>
+              <img
+                src={`${import.meta.env.BASE_URL}jayveermart-logo.png`}
+                alt="JAYVEERMart"
                 style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '8px',
-                  background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
+                  width: '42px',
+                  height: '42px',
+                  borderRadius: '10px',
+                  objectFit: 'cover',
+                  boxShadow: '0 3px 10px rgba(0, 0, 0, 0.3)',
                 }}
-              >
-                <ShoppingBag size={20} />
-              </div>
+              />
               <span style={{ fontSize: '1.3rem', fontWeight: 800, color: 'white', fontFamily: 'var(--font-heading)' }}>
                 JAYVEER<span style={{ color: '#818cf8' }}>Mart</span>
               </span>
@@ -98,10 +97,10 @@ export const Footer: React.FC = () => {
           {/* Quick Categories */}
           <div>
             <h3 style={{ color: 'white', fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>
-              Popular Categories
+              {t('shopByCategories')}
             </h3>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.875rem' }}>
-              {categories.slice(0, 6).map((cat) => (
+              {categories.slice(0, 7).map((cat) => (
                 <li key={cat.cat_id}>
                   <Link
                     to={`/store?cat=${cat.cat_id}`}
@@ -109,7 +108,7 @@ export const Footer: React.FC = () => {
                     onMouseEnter={(e) => (e.currentTarget.style.color = 'white')}
                     onMouseLeave={(e) => (e.currentTarget.style.color = '#94a3b8')}
                   >
-                    {cat.cat_title}
+                    {translateCategory(cat.cat_title)}
                   </Link>
                 </li>
               ))}
@@ -119,26 +118,26 @@ export const Footer: React.FC = () => {
           {/* Customer Self-Service */}
           <div>
             <h3 style={{ color: 'white', fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>
-              Customer Care
+              {t('customerCare')}
             </h3>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.875rem' }}>
               <li>
-                <Link to="/my-orders" style={{ color: '#94a3b8' }}>Track Your Order</Link>
+                <Link to="/my-orders" style={{ color: '#94a3b8' }}>{t('trackOrder')}</Link>
               </li>
               <li>
-                <Link to="/my-profile" style={{ color: '#94a3b8' }}>My Profile & Addresses</Link>
+                <Link to="/my-profile" style={{ color: '#94a3b8' }}>{t('myProfile')}</Link>
               </li>
               <li>
-                <Link to="/cart" style={{ color: '#94a3b8' }}>Shopping Cart</Link>
+                <Link to="/cart" style={{ color: '#94a3b8' }}>{t('shoppingCart')}</Link>
               </li>
               <li>
-                <Link to="/wishlist" style={{ color: '#94a3b8' }}>Saved Wishlist</Link>
+                <Link to="/wishlist" style={{ color: '#94a3b8' }}>{t('wishlist')}</Link>
               </li>
               <li>
-                <Link to="/conditions-of-use" style={{ color: '#94a3b8' }}>Conditions of Use</Link>
+                <Link to="/conditions-of-use" style={{ color: '#94a3b8' }}>{t('termsOfUse')}</Link>
               </li>
               <li>
-                <Link to="/privacy-notice" style={{ color: '#94a3b8' }}>Privacy Notice</Link>
+                <Link to="/privacy-notice" style={{ color: '#94a3b8' }}>{t('privacyNotice')}</Link>
               </li>
             </ul>
           </div>
@@ -195,14 +194,14 @@ export const Footer: React.FC = () => {
           }}
         >
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px' }}>
-            <span>© {new Date().getFullYear()} JAYVEERMart Enterprise. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} JAYVEERMart Enterprise. {t('allRightsReserved')}</span>
             <span style={{ color: '#334155' }}>|</span>
             <Link to="/conditions-of-use" style={{ color: '#94a3b8', textDecoration: 'none' }} onMouseEnter={(e) => e.currentTarget.style.color = '#818cf8'} onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}>
-              Conditions of Use
+              {t('termsOfUse')}
             </Link>
             <span style={{ color: '#334155' }}>|</span>
             <Link to="/privacy-notice" style={{ color: '#94a3b8', textDecoration: 'none' }} onMouseEnter={(e) => e.currentTarget.style.color = '#818cf8'} onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}>
-              Privacy Notice
+              {t('privacyNotice')}
             </Link>
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>

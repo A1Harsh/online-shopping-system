@@ -11,15 +11,19 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ idPrefix = '
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
+  // Close on outside click or touch
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
 
   const handleSelect = (code: string) => {
@@ -31,7 +35,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ idPrefix = '
 
   return (
     <div ref={dropdownRef} style={{ position: 'relative', zIndex: 9000 }}>
-      {/* Amazon nav-line-2 style trigger */}
+      {/* Trigger Button */}
       <button
         type="button"
         id={`language-selector-btn-${idPrefix}`}
@@ -63,7 +67,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ idPrefix = '
       >
         {/* Flag next to Language code */}
         <span style={{ display: 'flex', alignItems: 'center', gap: '6px', lineHeight: 1 }}>
-          {/* India flag — SVG inline for pixel-perfect rendering */}
+          {/* India flag */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 900 600"
@@ -156,7 +160,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ idPrefix = '
           />
 
           <div style={{ fontSize: '0.8rem', color: '#475569', fontWeight: 700, marginBottom: '10px', letterSpacing: '0.03em' }}>
-            🌐 Change Language
+            🌐 Select Language
           </div>
 
           {/* Language list */}
@@ -171,12 +175,6 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ idPrefix = '
                   aria-selected={isSelected}
                   onClick={(e) => {
                     e.preventDefault();
-                    e.stopPropagation();
-                    handleSelect(lang.code);
-                  }}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
                     handleSelect(lang.code);
                   }}
                   style={{

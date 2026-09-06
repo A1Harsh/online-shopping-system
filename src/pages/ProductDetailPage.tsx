@@ -13,7 +13,6 @@ import {
   MessageSquarePlus,
   ZoomIn,
   CheckCircle2,
-  CornerDownRight,
   Trash2,
   MessageSquare,
 } from 'lucide-react';
@@ -36,7 +35,7 @@ export const ProductDetailPage: React.FC = () => {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, translateCategory } = useLanguage();
 
   const product = getProductById(productId);
   const reviews = getProductReviews(productId);
@@ -103,12 +102,12 @@ export const ProductDetailPage: React.FC = () => {
   if (!product) {
     return (
       <div className="container" style={{ padding: '6rem 1.5rem', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>Product Not Found</h2>
+        <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>{t('productNotFound')}</h2>
         <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>
-          The product you are looking for does not exist or has been removed.
+          {t('productNotFoundDesc')}
         </p>
         <Link to="/store" className="btn btn-primary">
-          Back to Store
+          {t('backToStore')}
         </Link>
       </div>
     );
@@ -164,13 +163,15 @@ export const ProductDetailPage: React.FC = () => {
     <div className="container pdp-container" style={{ padding: '2rem 1.5rem 5rem' }}>
       {/* Breadcrumbs */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8125rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>
-        <Link to="/" style={{ color: 'var(--text-muted)' }}>Home</Link>
+        <Link to="/" style={{ color: 'var(--text-muted)' }}>{t('home')}</Link>
         <ChevronRight size={14} />
-        <Link to="/store" style={{ color: 'var(--text-muted)' }}>Store</Link>
+        <Link to="/store" style={{ color: 'var(--text-muted)' }}>{t('store')}</Link>
         {category && (
           <>
             <ChevronRight size={14} />
-            <Link to={`/store?cat=${category.cat_id}`} style={{ color: 'var(--text-muted)' }}>{category.cat_title}</Link>
+            <Link to={`/store?cat=${category.cat_id}`} style={{ color: 'var(--text-muted)' }}>
+              {translateCategory(category.cat_title)}
+            </Link>
           </>
         )}
         <ChevronRight size={14} />
@@ -250,7 +251,7 @@ export const ProductDetailPage: React.FC = () => {
 
             {product.featured && (
               <span className="badge badge-primary" style={{ position: 'absolute', top: '16px', left: '16px', zIndex: 2, pointerEvents: 'none' }}>
-                Featured Choice
+                {t('featuredChoice')}
               </span>
             )}
             {/* Zoom Hint Floating Badge */}
@@ -275,7 +276,7 @@ export const ProductDetailPage: React.FC = () => {
                 zIndex: 2,
               }}
             >
-              <ZoomIn size={13} /> Hover to Zoom
+              <ZoomIn size={13} /> {t('hoverToZoom')}
             </div>
           </div>
 
@@ -321,7 +322,7 @@ export const ProductDetailPage: React.FC = () => {
         {/* Right Column: Information & Actions */}
         <div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '0.75rem' }}>
-            <span className="badge badge-primary">{category?.cat_title}</span>
+            {category && <span className="badge badge-primary">{translateCategory(category.cat_title)}</span>}
             {brand && <span className="badge badge-neutral">{brand.brand_title}</span>}
           </div>
 
@@ -333,7 +334,7 @@ export const ProductDetailPage: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
             <StarRating rating={product.rating || 4.5} size={18} showValue />
             <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-              • ({reviews.length || product.review_count || 12} Verified Customer Reviews)
+              • ({reviews.length || product.review_count || 12} {t('verifiedCustomerReviews')})
             </span>
           </div>
 
@@ -353,7 +354,7 @@ export const ProductDetailPage: React.FC = () => {
               {formatCurrency(product.product_price)}
             </span>
             <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-              (Inclusive of all taxes & GST)
+              {t('inclusiveTaxes')}
             </span>
           </div>
 
@@ -365,15 +366,15 @@ export const ProductDetailPage: React.FC = () => {
           <div style={{ marginBottom: '1.5rem' }}>
             {isOutOfStock ? (
               <span className="badge badge-danger" style={{ fontSize: '0.85rem', padding: '6px 12px' }}>
-                Currently Out of Stock
+                {t('outOfStock')}
               </span>
             ) : product.product_qty <= 5 ? (
               <span className="badge badge-warning" style={{ fontSize: '0.85rem', padding: '6px 12px' }}>
-                ⚡ Only {product.product_qty} Units Left in Stock - Order Soon
+                ⚡ {t('onlyUnitsLeft', { qty: product.product_qty })}
               </span>
             ) : (
               <span className="badge badge-success" style={{ fontSize: '0.85rem', padding: '6px 12px' }}>
-                ✓ In Stock & Ready for Same-Day Dispatch ({product.product_qty} available)
+                {t('inStockReadyDispatch', { qty: product.product_qty })}
               </span>
             )}
           </div>
@@ -381,7 +382,7 @@ export const ProductDetailPage: React.FC = () => {
           {/* Quantity Counter & Action Buttons */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <span style={{ fontSize: '0.9375rem', fontWeight: 600 }}>Quantity:</span>
+              <span style={{ fontSize: '0.9375rem', fontWeight: 600 }}>{t('quantity')}</span>
               <div style={{ display: 'flex', alignItems: 'center', border: '1.5px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
                 <button
                   type="button"
@@ -412,7 +413,7 @@ export const ProductDetailPage: React.FC = () => {
               >
                 {addedAnim ? (
                   <>
-                    <Check size={20} /> Added to Cart!
+                    <Check size={20} /> {t('addedToCart')}
                   </>
                 ) : (
                   <>
@@ -434,8 +435,8 @@ export const ProductDetailPage: React.FC = () => {
                 type="button"
                 onClick={handleWishlistToggle}
                 className="btn btn-lg"
-                title={inWishlist ? 'Remove from Wishlist' : 'Save to Wishlist'}
-                aria-label={inWishlist ? 'Remove from Wishlist' : 'Save to Wishlist'}
+                title={inWishlist ? t('removeFromWishlist') : t('saveToWishlist')}
+                aria-label={inWishlist ? t('removeFromWishlist') : t('saveToWishlist')}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -461,7 +462,7 @@ export const ProductDetailPage: React.FC = () => {
                   }}
                 />
                 <span style={{ fontSize: '0.9375rem', fontWeight: 600 }}>
-                  {inWishlist ? 'Saved' : 'Wishlist'}
+                  {inWishlist ? t('saveToWishlist') : t('wishlist')}
                 </span>
               </button>
             </div>
@@ -471,27 +472,37 @@ export const ProductDetailPage: React.FC = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', padding: '1.25rem', backgroundColor: 'white', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <Truck size={20} color="var(--primary)" />
-              <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>Free Express Delivery</span>
+              <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>{t('freeExpressDelivery')}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <RefreshCw size={20} color="var(--primary)" />
-              <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>7-Day Easy Returns</span>
+              <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>{t('sevenDayReturns')}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <ShieldCheck size={20} color="var(--primary)" />
-              <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>100% Genuine Product</span>
+              <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>{t('genuineProduct')}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <Award size={20} color="var(--primary)" />
-              <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>Official Manufacturer Warranty</span>
+              <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>{t('officialWarranty')}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Tabs: Description, Specs, Reviews */}
-      <div className="card" style={{ marginBottom: '4rem', padding: '2rem' }}>
-        <div style={{ display: 'flex', borderBottom: '1px solid var(--border-color)', gap: '1.5rem', marginBottom: '2rem' }}>
+      <div className="card pdp-tabs-card" style={{ marginBottom: '4rem' }}>
+        <div
+          className="pdp-tabs-header"
+          style={{
+            display: 'flex',
+            borderBottom: '1px solid var(--border-color)',
+            gap: '1.5rem',
+            marginBottom: '2rem',
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+          }}
+        >
           <button
             onClick={() => setActiveTab('desc')}
             style={{
@@ -505,7 +516,7 @@ export const ProductDetailPage: React.FC = () => {
               cursor: 'pointer',
             }}
           >
-            Description & Highlights
+            {t('descriptionHighlights')}
           </button>
           <button
             onClick={() => setActiveTab('reviews')}
@@ -520,28 +531,28 @@ export const ProductDetailPage: React.FC = () => {
               cursor: 'pointer',
             }}
           >
-            Customer Reviews ({reviews.length})
+            {t('customerReviewsTab')} ({reviews.length})
           </button>
         </div>
 
         {activeTab === 'desc' && (
           <div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem' }}>Product Overview</h3>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem' }}>{t('productOverview')}</h3>
             <p style={{ fontSize: '0.9375rem', color: 'var(--text-muted)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
               {product.product_desc}
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1.5rem' }}>
               <div style={{ padding: '1rem', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>Category</div>
-                <div style={{ fontWeight: 700 }}>{category?.cat_title || 'General'}</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>{t('category')}</div>
+                <div style={{ fontWeight: 700 }}>{category ? translateCategory(category.cat_title) : 'General'}</div>
               </div>
               <div style={{ padding: '1rem', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>Brand</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>{t('brand')}</div>
                 <div style={{ fontWeight: 700 }}>{brand?.brand_title || 'JAYVEERMart'}</div>
               </div>
               <div style={{ padding: '1rem', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>Stock Availability</div>
-                <div style={{ fontWeight: 700 }}>{product.product_qty} Units in Stock</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>{t('stockAvailability')}</div>
+                <div style={{ fontWeight: 700 }}>{product.product_qty} {t('unitsInStock')}</div>
               </div>
             </div>
           </div>
@@ -549,15 +560,15 @@ export const ProductDetailPage: React.FC = () => {
 
         {activeTab === 'reviews' && (
           <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '3rem' }}>
+            <div className="product-reviews-grid">
               {/* Existing Reviews List */}
               <div>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.25rem' }}>
-                  Customer Reviews ({reviews.length})
+                  {t('customerReviewsTab')} ({reviews.length})
                 </h3>
                 {reviews.length === 0 ? (
                   <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                    No reviews yet. Be the first to share your experience with this product!
+                    {t('noReviewsYet')}. {t('beFirstReview')}
                   </p>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -576,7 +587,7 @@ export const ProductDetailPage: React.FC = () => {
                             <span style={{ fontWeight: 700, fontSize: '0.9375rem' }}>{rev.name}</span>
                             {rev.is_verified_purchase && (
                               <span style={{ fontSize: '0.75rem', backgroundColor: '#ecfdf5', color: '#059669', padding: '2px 8px', borderRadius: '4px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <CheckCircle2 size={12} /> Verified Buyer
+                                <CheckCircle2 size={12} /> {t('verifiedBuyer')}
                               </span>
                             )}
                           </div>
@@ -603,7 +614,7 @@ export const ProductDetailPage: React.FC = () => {
                           <StarRating rating={rev.rating} size={14} />
                         </div>
 
-                        <p style={{ fontSize: '0.875rem', color: 'var(--text-main)', lineHeight: 1.6, marginBottom: rev.admin_reply ? '1rem' : '0.5rem' }}>
+                        <p style={{ fontSize: '0.875rem', color: 'var(--text-main)', lineHeight: 1.6, marginBottom: rev.admin_reply ? '1rem' : '0.5rem', wordBreak: 'break-word' }}>
                           "{rev.review}"
                         </p>
 
@@ -632,7 +643,7 @@ export const ProductDetailPage: React.FC = () => {
                                 </span>
                               )}
                             </div>
-                            <p style={{ fontSize: '0.8125rem', color: 'var(--text-main)', lineHeight: 1.5, margin: 0 }}>
+                            <p style={{ fontSize: '0.8125rem', color: 'var(--text-main)', lineHeight: 1.5, margin: 0, wordBreak: 'break-word' }}>
                               {rev.admin_reply}
                             </p>
                           </div>
@@ -659,7 +670,7 @@ export const ProductDetailPage: React.FC = () => {
                               gap: '4px',
                             }}
                           >
-                            <MessageSquare size={12} /> Reply as Admin
+                            <MessageSquare size={12} /> {t('reply')} as Admin
                           </button>
                         )}
 
@@ -710,27 +721,33 @@ export const ProductDetailPage: React.FC = () => {
               </div>
 
               {/* Add New Review Form */}
-              <div style={{ backgroundColor: 'var(--bg-subtle)', padding: '1.75rem', borderRadius: 'var(--radius-lg)' }}>
+              <div
+                className="product-review-form-card"
+                style={{
+                  backgroundColor: 'var(--bg-subtle)',
+                  borderRadius: 'var(--radius-lg)',
+                  border: '1px solid var(--border-light)',
+                }}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.25rem' }}>
                   <MessageSquarePlus size={20} color="var(--primary)" />
-                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>Write a Review</h3>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>{t('writeReview')}</h3>
                 </div>
 
                 {reviewSubmitted ? (
                   <div style={{ padding: '1.5rem', backgroundColor: 'var(--success-light)', borderRadius: 'var(--radius-md)', textAlign: 'center', color: 'var(--success)' }}>
                     <Check size={32} style={{ margin: '0 auto 8px' }} />
-                    <div style={{ fontWeight: 700 }}>Thank you for your review!</div>
-                    <div style={{ fontSize: '0.8125rem' }}>Your rating has been recorded.</div>
+                    <div style={{ fontWeight: 700 }}>{t('reviewSubmittedSuccess')}</div>
                   </div>
                 ) : (
                   <form onSubmit={handleReviewSubmit}>
                     <div className="input-group">
-                      <label className="input-label">Your Rating</label>
+                      <label className="input-label">{t('yourRating')}</label>
                       <StarRating rating={newRating} size={24} interactive onRatingChange={(r) => setNewRating(r)} />
                     </div>
 
                     <div className="input-group">
-                      <label className="input-label">Your Full Name</label>
+                      <label className="input-label">{t('yourName')}</label>
                       <input
                         type="text"
                         required
@@ -742,7 +759,7 @@ export const ProductDetailPage: React.FC = () => {
                     </div>
 
                     <div className="input-group">
-                      <label className="input-label">Email Address</label>
+                      <label className="input-label">{t('yourEmail')}</label>
                       <input
                         type="email"
                         required
@@ -754,20 +771,20 @@ export const ProductDetailPage: React.FC = () => {
                     </div>
 
                     <div className="input-group">
-                      <label className="input-label">Your Review</label>
+                      <label className="input-label">{t('customerReviewsTab')}</label>
                       <textarea
                         required
                         rows={4}
                         value={reviewComment}
                         onChange={(e) => setReviewComment(e.target.value)}
-                        placeholder="What did you like or dislike about this product?"
+                        placeholder={t('writeReviewPrompt')}
                         className="input-field"
                         style={{ resize: 'vertical' }}
                       />
                     </div>
 
                     <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-                      Submit Customer Review
+                      {t('submitReview')}
                     </button>
                   </form>
                 )}
@@ -781,7 +798,7 @@ export const ProductDetailPage: React.FC = () => {
       {relatedProducts.length > 0 && (
         <section>
           <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1.25rem' }}>
-            Customers Also Viewed
+            {t('customersAlsoViewed')}
           </h2>
           <div className="store-products-grid">
             {relatedProducts.map((p) => (
@@ -816,7 +833,7 @@ export const ProductDetailPage: React.FC = () => {
             {formatCurrency(product.product_price)}
           </div>
           <div style={{ fontSize: '0.625rem', color: '#15803d', fontWeight: 700 }}>
-            {isOutOfStock ? 'Out of stock' : '✓ Free Delivery'}
+            {isOutOfStock ? t('outOfStock') : `✓ ${t('deliveryFree')}`}
           </div>
         </div>
 
@@ -824,8 +841,8 @@ export const ProductDetailPage: React.FC = () => {
         <button
           type="button"
           onClick={handleWishlistToggle}
-          title={inWishlist ? 'Remove from Wishlist' : 'Save to Wishlist'}
-          aria-label={inWishlist ? 'Remove from Wishlist' : 'Save to Wishlist'}
+          title={inWishlist ? t('removeFromWishlist') : t('saveToWishlist')}
+          aria-label={inWishlist ? t('removeFromWishlist') : t('saveToWishlist')}
           style={{
             background: inWishlist ? '#fef2f2' : '#f8fafc',
             border: inWishlist ? '1px solid #fca5a5' : '1px solid var(--border-color)',
@@ -851,7 +868,7 @@ export const ProductDetailPage: React.FC = () => {
           className={`btn btn-secondary ${addedAnim ? 'btn-success' : ''}`}
           style={{ flex: 1, padding: '9px 8px', fontSize: '0.8125rem', fontWeight: 700, borderRadius: '10px' }}
         >
-          {addedAnim ? '✓ Added' : t('addToCart')}
+          {addedAnim ? `✓ ${t('addedToCart')}` : t('addToCart')}
         </button>
 
         <button

@@ -23,7 +23,7 @@ import { useLanguage } from '../context/LanguageContext';
 export const StorePage: React.FC = () => {
   const { products, categories, brands } = useProducts();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { t } = useLanguage();
+  const { t, translateCategory } = useLanguage();
 
   // URL state sync
   const urlCat = searchParams.get('cat') ? Number(searchParams.get('cat')) : null;
@@ -92,19 +92,6 @@ export const StorePage: React.FC = () => {
   const selectedCategoryObj = categories.find(c => c.cat_id === selectedCat);
   const selectedBrandObj = brands.find(b => b.brand_id === selectedBrand);
 
-  const getTranslatedCategoryTitle = (catTitle: string) => {
-    switch (catTitle) {
-      case 'Electronics': return t('electronics');
-      case 'Ladies Wears': return t('ladiesWears');
-      case 'Mens Wear': return t('mensWear');
-      case 'Kids Wear': return t('kidsWear');
-      case 'Furnitures': return t('furnitures');
-      case 'Home Appliances': return t('homeAppliances');
-      case 'Sports': return t('sports');
-      default: return catTitle;
-    }
-  };
-
   return (
     <div className="container" style={{ padding: '2rem 1.5rem 4rem' }}>
       {/* Breadcrumbs */}
@@ -115,7 +102,7 @@ export const StorePage: React.FC = () => {
         {selectedCategoryObj && (
           <>
             <ChevronRight size={14} />
-            <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{getTranslatedCategoryTitle(selectedCategoryObj.cat_title)}</span>
+            <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{translateCategory(selectedCategoryObj.cat_title)}</span>
           </>
         )}
       </div>
@@ -137,7 +124,7 @@ export const StorePage: React.FC = () => {
               className={`btn btn-sm ${selectedCat === cat.cat_id ? 'btn-primary' : 'btn-secondary'}`}
               style={{ borderRadius: 'var(--radius-full)', flexShrink: 0 }}
             >
-              {getTranslatedCategoryTitle(cat.cat_title)}
+              {translateCategory(cat.cat_title)}
             </button>
           ))}
         </div>
@@ -158,10 +145,10 @@ export const StorePage: React.FC = () => {
       >
         <div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>
-            {selectedCategoryObj ? selectedCategoryObj.cat_title : t('productCatalog')}
+            {selectedCategoryObj ? translateCategory(selectedCategoryObj.cat_title) : t('productCatalog')}
           </h1>
           <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-            Showing <strong>{filteredProducts.length}</strong> items found
+            {t('showing')} <strong>{filteredProducts.length}</strong> {t('itemsFound')}
           </p>
         </div>
 
@@ -181,7 +168,7 @@ export const StorePage: React.FC = () => {
           {/* Sort Dropdown */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }} className="hide-mobile">
-              Sort by:
+              {t('sortBy')}:
             </span>
             <select
               value={sortBy}
@@ -196,10 +183,10 @@ export const StorePage: React.FC = () => {
                 outline: 'none',
               }}
             >
-              <option value="default">Featured / Default</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
-              <option value="rating">Highest Rated</option>
+              <option value="default">{t('sortFeatured')}</option>
+              <option value="price_asc">{t('sortPriceAsc')}</option>
+              <option value="price_desc">{t('sortPriceDesc')}</option>
+              <option value="rating">{t('sortRating')}</option>
             </select>
           </div>
 
@@ -271,7 +258,7 @@ export const StorePage: React.FC = () => {
 
           {/* Search Box in Sidebar */}
           <div style={{ marginBottom: '1.5rem' }}>
-            <label className="input-label" style={{ marginBottom: '6px', display: 'block' }}>Search Keywords</label>
+            <label className="input-label" style={{ marginBottom: '6px', display: 'block' }}>{t('searchBtn')}</label>
             <div style={{ position: 'relative' }}>
               <input
                 type="text"
@@ -330,7 +317,7 @@ export const StorePage: React.FC = () => {
                       textAlign: 'left',
                     }}
                   >
-                    <span>{getTranslatedCategoryTitle(c.cat_title)}</span>
+                    <span>{translateCategory(c.cat_title)}</span>
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{count}</span>
                   </button>
                 );
@@ -340,7 +327,7 @@ export const StorePage: React.FC = () => {
 
           {/* Brands Filter */}
           <div style={{ marginBottom: '1.75rem' }}>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.75rem' }}>Brands</h4>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.75rem' }}>{t('brands')}</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {brands.map((b) => {
                 const isSelected = selectedBrand === b.brand_id;
@@ -375,7 +362,7 @@ export const StorePage: React.FC = () => {
           {/* Price Range Slider */}
           <div style={{ marginBottom: '1.75rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>Max Price</span>
+              <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>{t('priceRange')}</span>
               <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary)' }}>
                 {formatCurrency(priceLimit)}
               </span>
@@ -397,7 +384,7 @@ export const StorePage: React.FC = () => {
 
           {/* Customer Rating Filter */}
           <div style={{ marginBottom: '1.75rem' }}>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem' }}>Rating</h4>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem' }}>{t('customerRating')}</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {[4, 3].map((star) => (
                 <button
@@ -412,21 +399,23 @@ export const StorePage: React.FC = () => {
                     border: 'none',
                     backgroundColor: minRating === star ? 'var(--primary-light)' : 'transparent',
                     color: minRating === star ? 'var(--primary)' : 'var(--text-main)',
+                    fontWeight: minRating === star ? 700 : 500,
                     fontSize: '0.85rem',
                     cursor: 'pointer',
+                    textAlign: 'left',
                   }}
                 >
                   <div style={{ display: 'flex', color: '#f59e0b' }}>
                     {[...Array(star)].map((_, i) => <Star key={i} size={14} fill="#f59e0b" />)}
                   </div>
-                  <span>& above</span>
+                  <span>{star}★+</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* In-Stock Toggle */}
-          <div>
+          <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer' }}>
               <input
                 type="checkbox"
@@ -434,7 +423,7 @@ export const StorePage: React.FC = () => {
                 onChange={(e) => setInStockOnly(e.target.checked)}
                 style={{ width: '16px', height: '16px', accentColor: 'var(--primary)' }}
               />
-              <span>In Stock Only</span>
+              <span>{t('inStockOnly')}</span>
             </label>
           </div>
         </aside>
@@ -697,10 +686,10 @@ export const StorePage: React.FC = () => {
             {/* Drawer Footer CTA */}
             <div style={{ padding: '1rem', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '10px', background: 'white' }}>
               <button onClick={handleResetFilters} className="btn btn-secondary" style={{ flex: 1 }}>
-                Reset
+                {t('clearFilters')}
               </button>
               <button onClick={() => setShowMobileFilter(false)} className="btn btn-primary" style={{ flex: 2 }}>
-                {t('applyFilters')} ({filteredProducts.length} Items)
+                {t('applyFilters')} ({filteredProducts.length} {t('items')})
               </button>
             </div>
           </div>

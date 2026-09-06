@@ -78,7 +78,7 @@ export const CartPage: React.FC = () => {
   return (
     <div className="container" style={{ padding: '2.5rem 1.5rem 5rem' }}>
       <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '2rem' }}>
-        Shopping Cart ({cartItems.reduce((s, i) => s + i.qty, 0)} Items)
+        {t('shoppingCart')} ({cartItems.reduce((s, i) => s + i.qty, 0)} {t('items')})
       </h1>
 
       <div className="cart-layout-grid">
@@ -130,10 +130,10 @@ export const CartPage: React.FC = () => {
                       </h3>
                     </Link>
                     <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '6px' }}>
-                      Unit Price: <strong>{formatCurrency(item.product.product_price)}</strong>
+                      {t('unitPrice')} <strong>{formatCurrency(item.product.product_price)}</strong>
                     </div>
                     <span style={{ fontSize: '0.75rem', color: 'var(--success)', fontWeight: 600 }}>
-                      ✓ In Stock
+                      ✓ {t('inStock')}
                     </span>
                   </div>
 
@@ -199,7 +199,7 @@ export const CartPage: React.FC = () => {
           {/* Promo Coupon Card */}
           <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Tag size={18} color="var(--primary)" /> Have a Promo Code?
+              <Tag size={18} color="var(--primary)" /> {t('promoCode')}
             </h3>
 
             {couponCode ? (
@@ -240,7 +240,7 @@ export const CartPage: React.FC = () => {
                   style={{ textTransform: 'uppercase' }}
                 />
                 <button type="submit" className="btn btn-primary" style={{ padding: '0.625rem 1.25rem' }}>
-                  Apply
+                  {t('apply')}
                 </button>
               </form>
             )}
@@ -286,7 +286,7 @@ export const CartPage: React.FC = () => {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9375rem', marginBottom: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
-                <span>{t('subtotal')} ({cartItems.reduce((s, i) => s + i.qty, 0)} items)</span>
+                <span>{t('subtotal')} ({cartItems.reduce((s, i) => s + i.qty, 0)} {t('items')})</span>
                 <span>{formatCurrency(subtotal)}</span>
               </div>
               {discountAmount > 0 && (
