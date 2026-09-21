@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, NavLink, Link } from 'react-router-dom';
+import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Package,
@@ -11,9 +11,18 @@ import {
   ExternalLink,
   ShieldCheck,
   MessageSquare,
+  LogOut,
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export const AdminLayout: React.FC = () => {
+  const { logout, currentSession } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/admin/login', { replace: true });
+  };
 
   const navItems = [
     { to: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={18} />, end: true },
@@ -93,8 +102,22 @@ export const AdminLayout: React.FC = () => {
           ))}
         </nav>
 
-        {/* Storefront Link & Admin User Info */}
+        {/* Storefront Link, Admin Info & Logout */}
         <div style={{ padding: '1rem', borderTop: '1px solid #1e293b', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {/* Admin info */}
+          {currentSession && (
+            <div style={{
+              padding: '8px 10px',
+              background: 'rgba(99,102,241,0.08)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid rgba(99,102,241,0.15)',
+            }}>
+              <div style={{ fontSize: '0.6875rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Signed in as</div>
+              <div style={{ fontSize: '0.8125rem', color: '#c7d2fe', fontWeight: 600, marginTop: '2px', wordBreak: 'break-all' }}>
+                {currentSession.email}
+              </div>
+            </div>
+          )}
           <Link
             to="/"
             style={{
@@ -113,6 +136,26 @@ export const AdminLayout: React.FC = () => {
           >
             <ExternalLink size={14} /> Back to Storefront
           </Link>
+          <button
+            onClick={handleLogout}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              padding: '8px',
+              backgroundColor: 'rgba(239,68,68,0.1)',
+              border: '1px solid rgba(239,68,68,0.25)',
+              borderRadius: 'var(--radius-md)',
+              color: '#f87171',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              width: '100%',
+            }}
+          >
+            <LogOut size={14} /> Sign Out
+          </button>
         </div>
       </aside>
 
