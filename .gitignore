@@ -80,4 +80,76 @@ coverage/
 # AI Assistant & Skills
 .agents/
 
+# Android signing credentials & Firebase config
+*.jks
+*.keystore
+android/app/google-services.json
+ios/App/GoogleService-Info.plist
 
+# ── Personal Data Protection ──────────────────────────────────────────────────
+# Personal documents
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+*.odt
+*.ods
+
+# Personal photos & videos
+*.jpg
+*.jpeg
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.wmv
+*.3gp
+!public/**/*.jpg
+!public/**/*.jpeg
+!public/**/*.png
+!src/assets/**/*.png
+!src/assets/**/*.jpg
+
+# Archives & compressed files (personal backups)
+*.zip
+*.rar
+*.7z
+*.tar.gz
+*.tar
+
+# Windows personal files
+*.lnk
+*.url
+desktop.ini
+$RECYCLE.BIN/
+ntuser.dat*
+NTUSER.DAT*
+
+# Browser data exports
+bookmarks*.html
+cookies*.txt
+passwords*.csv
+history*.json
+
+# Personal notes & local scratch files
+notes.txt
+notes.md
+todo.txt
+personal*.txt
+private*.txt
+scratch.*
+local.*
+
+# Screen recordings & screenshots (accidental)
+*.webm
+Screenshot*
+Recording*
+screen-*
+
+# Local environment overrides (personal machine settings)
+.env.local
+.env.*.local
+local.config.*
