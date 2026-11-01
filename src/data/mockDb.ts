@@ -20,9 +20,9 @@ import { INITIAL_PRODUCTS, INITIAL_CATEGORIES, INITIAL_BRANDS, INITIAL_ORDERS, I
 
 export const INITIAL_STORE_SETTINGS: StoreSettings = {
   storeName: 'JAYVEERMart Enterprise',
-  supportEmail: 'support@jayveermart.com',
-  supportPhone: '+91 1800 123 4567',
-  storeAddress: 'JAYVEER Tech Park, Sector 5, Bengaluru, Karnataka 560100',
+  supportEmail: 'support@example.com',
+  supportPhone: '+91 1800 000 0000',
+  storeAddress: 'Store Address, City, State 000000',
   currency: 'INR (₹)',
   freeShippingThreshold: 1000,
   standardShippingFee: 99,

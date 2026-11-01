@@ -201,7 +201,7 @@ export const verify2FAOTP = (arg1: string, arg2: string): boolean => {
   const clean2 = arg2.trim();
 
   // If simulated bypass (only permitted in development environments)
-  if (import.meta.env.DEV && (clean1 === '123456' || clean2 === '123456')) return true;
+  if (import.meta.env.DEV && import.meta.env.VITE_DEV_OTP_BYPASS === 'true' && (clean1 === '123456' || clean2 === '123456')) return true;
 
   // Check if arg1 is otp, arg2 is secret
   const otpFromArg2 = getActive2FAOTP(clean2);
@@ -521,7 +521,7 @@ export const verifyOtpToken = (
   tokenObj.attempts += 1;
   const cleanEntered = enteredOtp.trim();
 
-  if (cleanEntered === tokenObj.otp || (import.meta.env.DEV && cleanEntered === '123456')) {
+  if (cleanEntered === tokenObj.otp || (import.meta.env.DEV && import.meta.env.VITE_DEV_OTP_BYPASS === 'true' && cleanEntered === '123456')) {
     tokenObj.consumed = true;
     return { isValid: true };
   }

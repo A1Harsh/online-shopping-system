@@ -83,13 +83,13 @@ export const Footer: React.FC = () => {
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.8125rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Phone size={14} color="#818cf8" /> +91 1800 123 4567
+                <Phone size={14} color="#818cf8" /> +91 1800 000 0000
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Mail size={14} color="#818cf8" /> support@jayveermart.com
+                <Mail size={14} color="#818cf8" /> support@example.com
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <MapPin size={14} color="#818cf8" /> JAYVEER Tech Park, Sector 5, Bengaluru
+                <MapPin size={14} color="#818cf8" /> Store Address, City, State
               </div>
             </div>
           </div>

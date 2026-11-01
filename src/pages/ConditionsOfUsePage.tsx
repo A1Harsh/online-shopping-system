@@ -304,12 +304,12 @@ export const ConditionsOfUsePage: React.FC = () => {
               <div style={{ fontWeight: 700, fontSize: '1rem', color: '#0f172a' }}>Mr. Harshvardhan Sathvara</div>
               <div style={{ fontSize: '0.875rem', color: '#475569' }}>Senior Grievance Redressal Officer & Legal Counsel</div>
               <div style={{ fontSize: '0.875rem', color: '#475569' }}><strong>Entity:</strong> JAYVEERMart Enterprise Pvt. Ltd.</div>
-              <div style={{ fontSize: '0.875rem', color: '#475569' }}><strong>Address:</strong> Tech Park Tower B, Outer Ring Road, Bengaluru, Karnataka - 560103, India</div>
+              <div style={{ fontSize: '0.875rem', color: '#475569' }}><strong>Address:</strong> Store Address, City, State</div>
               <div style={{ fontSize: '0.875rem', color: '#4f46e5', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Mail size={16} /> <strong>Email:</strong> grievance-officer@jayveermart.com
               </div>
               <div style={{ fontSize: '0.875rem', color: '#4f46e5', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Phone size={16} /> <strong>Toll-Free Support:</strong> +91 1800 123 4567 (Mon-Sat, 9:00 AM - 7:00 PM IST)
+                <Phone size={16} /> <strong>Toll-Free Support:</strong> +91 1800 000 0000 (Mon-Sat, 9:00 AM - 7:00 PM IST)
               </div>
             </div>
             <p style={{ fontSize: '0.8125rem', color: '#64748b', marginTop: '0.75rem' }}>

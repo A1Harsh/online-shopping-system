@@ -15,6 +15,7 @@ import { Footer } from './components/common/Footer';
 import { MobileNav } from './components/common/MobileNav';
 import { CartDrawer } from './components/cart/CartDrawer';
 import { NexusAiAssistant } from './components/chatbot/NexusAiAssistant';
+import { ScrollToTop as ScrollToTopButton } from './components/common/ScrollToTop';
 
 // Storefront Pages
 import { HomePage } from './pages/HomePage';
@@ -59,6 +60,7 @@ const StorefrontLayout: React.FC<{ children: React.ReactNode }> = ({ children })
       <MobileNav />
       <CartDrawer />
       <NexusAiAssistant />
+      <ScrollToTopButton />
     </div>
   );
 };

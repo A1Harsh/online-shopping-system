@@ -378,27 +378,29 @@ export const Header: React.FC = () => {
                   <Package size={16} /> {t('myOrders')}
                 </Link>
 
-                <Link
-                  to="/admin"
-                  onClick={() => setShowUserMenu(false)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 12px',
-                    fontSize: '0.875rem',
-                    borderRadius: 'var(--radius-sm)',
-                    textDecoration: 'none',
-                    color: 'var(--primary)',
-                    fontWeight: 600,
-                    borderTop: '1px solid var(--border-light)',
-                    marginTop: '4px',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-                >
-                  <ShieldCheck size={16} /> {t('adminPortal')}
-                </Link>
+                {user?.role === 'admin' && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setShowUserMenu(false)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px 12px',
+                      fontSize: '0.875rem',
+                      borderRadius: 'var(--radius-sm)',
+                      textDecoration: 'none',
+                      color: 'var(--primary)',
+                      fontWeight: 600,
+                      borderTop: '1px solid var(--border-light)',
+                      marginTop: '4px',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <ShieldCheck size={16} /> {t('adminPortal')}
+                  </Link>
+                )}
               </div>
             )}
           </div>
@@ -660,7 +662,7 @@ export const Header: React.FC = () => {
                     {user?.first_name ? `${user.first_name} ${user.last_name}` : 'JAYVEERMart'}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
-                    {user?.email || 'customer@jayveermart.com'}
+                    {user?.email || 'support@example.com'}
                   </div>
                 </div>
               </div>
@@ -763,28 +765,8 @@ export const Header: React.FC = () => {
 
             {/* Admin Portal & Helpline Footer */}
             <div style={{ padding: '1rem', backgroundColor: '#f8fafc', marginTop: 'auto' }}>
-              <Link
-                to="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '10px',
-                  backgroundColor: '#e0e7ff',
-                  color: '#4338ca',
-                  borderRadius: '10px',
-                  fontWeight: 700,
-                  fontSize: '0.875rem',
-                  textDecoration: 'none',
-                  marginBottom: '10px',
-                }}
-              >
-                <ShieldCheck size={18} /> Admin Control Portal
-              </Link>
               <div style={{ textAlign: 'center', fontSize: '0.75rem', color: '#64748b' }}>
-                Helpline: <strong>+91 1800 123 4567</strong>
+                Helpline: <strong>+91 1800 000 0000</strong>
               </div>
             </div>
           </div>

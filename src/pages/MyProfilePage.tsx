@@ -63,7 +63,7 @@ export const MyProfilePage: React.FC = () => {
   // Profile Edit State
   const [firstName, setFirstName] = useState(user?.first_name || 'Rahul');
   const [lastName, setLastName] = useState(user?.last_name || 'Sharma');
-  const [mobile, setMobile] = useState(user?.mobile || '+91 98765 43210');
+  const [mobile, setMobile] = useState(user?.mobile || '');
   const [email, setEmail] = useState(user?.email || 'customer@jayveermart.com');
 
   // Address Management State
@@ -137,9 +137,9 @@ export const MyProfilePage: React.FC = () => {
     setAddrMobile(user?.mobile || '');
     setAddrLine1('');
     setAddrLine2('');
-    setAddrCity('Bengaluru');
+    setAddrCity('');
     setAddrState('Karnataka');
-    setAddrZip('560001');
+    setAddrZip('');
     setAddrType('Home');
     setAddrIsDefault(addresses.length === 0);
     setIsAddressModalOpen(true);
@@ -887,11 +887,11 @@ export const MyProfilePage: React.FC = () => {
             <form onSubmit={handleSaveCard}>
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>Cardholder Name</label>
-                <input type="text" required value={cardHolder} onChange={(e) => setCardHolder(e.target.value)} placeholder="Rahul Sharma" style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                <input type="text" required value={cardHolder} onChange={(e) => setCardHolder(e.target.value)} placeholder="Cardholder Name" style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
               </div>
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>Card Number</label>
-                <input type="text" required value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} placeholder="4242 4242 4242 4242" style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                <input type="text" required value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} placeholder="XXXX XXXX XXXX XXXX" style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
                 <div>

@@ -299,12 +299,12 @@ export const PrivacyNoticePage: React.FC = () => {
               <div style={{ fontWeight: 700, fontSize: '1rem', color: '#0f172a' }}>Data Protection & Privacy Desk</div>
               <div style={{ fontSize: '0.875rem', color: '#475569' }}><strong>Officer:</strong> Mr. Harshvardhan Sathvara (Lead Privacy Officer)</div>
               <div style={{ fontSize: '0.875rem', color: '#475569' }}><strong>Organization:</strong> JAYVEERMart Enterprise Pvt. Ltd.</div>
-              <div style={{ fontSize: '0.875rem', color: '#475569' }}><strong>Address:</strong> Tech Park Tower B, Outer Ring Road, Bengaluru, Karnataka - 560103, India</div>
+              <div style={{ fontSize: '0.875rem', color: '#475569' }}><strong>Address:</strong> Store Address, City, State</div>
               <div style={{ fontSize: '0.875rem', color: '#4f46e5', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Mail size={16} /> <strong>Email:</strong> privacy@jayveermart.com / dpo@jayveermart.com
               </div>
               <div style={{ fontSize: '0.875rem', color: '#4f46e5', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Phone size={16} /> <strong>Direct Helpline:</strong> +91 1800 123 4567
+                <Phone size={16} /> <strong>Direct Helpline:</strong> +91 1800 000 0000
               </div>
             </div>
             <p style={{ fontSize: '0.8125rem', color: '#64748b', marginTop: '0.75rem' }}>
