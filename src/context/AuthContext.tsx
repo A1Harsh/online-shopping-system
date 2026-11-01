@@ -8,6 +8,44 @@ import {
 } from '../types';
 import { mockDb } from '../data/mockDb';
 import { INITIAL_USER } from '../data/initialData';
+import {
+  hashPassword,
+  verifyPassword,
+  generateSalt,
+  createAdminSession,
+  isSessionExpired,
+  authRateLimiter,
+} from '../utils/security';
+import { logSecurityEvent } from '../utils/securityLogger';
+
+// Default admin password for first-time login (gets replaced with PBKDF2 hash on first use)
+const DEFAULT_ADMIN_PASSWORD = 'Admin@1234';
+
+// App-specific localStorage keys to wipe on error reset (instead of clear-all)
+export const APP_STORAGE_KEYS = [
+  'jayveermart_products',
+  'jayveermart_categories',
+  'jayveermart_brands',
+  'jayveermart_orders',
+  'jayveermart_reviews',
+  'jayveermart_users',
+  'jayveermart_current_user',
+  'jayveermart_cart',
+  'jayveermart_wishlist',
+  'jayveermart_store_settings',
+  'jayveermart_admin_sessions',
+  'jayveermart_current_admin_session',
+  'jayveermart_customer_sessions',
+  'jayveermart_current_customer_session',
+  'jayveermart_customer_addresses',
+  'jayveermart_saved_payments',
+  'jayveermart_known_devices',
+  'jayveermart_otp_tokens',
+  'jayveermart_admin_reset_tokens',
+  'jayveermart_email_outbox',
+  'jayveermart_processed_login_events',
+  'jayveermart_security_audit_logs',
+];
 
 export interface AuthContextType {
   user: User | null;
@@ -34,9 +72,9 @@ export interface AuthContextType {
   deleteSavedPaymentMethod: (id: string) => void;
   setDefaultPaymentMethod: (id: string) => void;
 
-  // Public Compatibility Stubs
+  // Auth
   login: (emailOrMobile: string, password?: string, rememberMe?: boolean) => Promise<{ success: boolean; message: string }>;
-  adminLogin: (email: string, password: string) => Promise<{ success: boolean; requires2FA?: boolean; message: string }>;
+  adminLogin: (email: string, password: string) => Promise<{ success: boolean; requires2FA?: boolean; message: string; requiresCaptcha?: boolean }>;
   logout: () => void;
   logoutAllDevices: () => void;
   identifyAccount: (emailOrMobile: string) => { exists: boolean; emailOrMobile: string };
@@ -60,12 +98,20 @@ export interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Public Access: Always initialized with an active default customer/admin user
+  // ─── Storefront User (Public Access — always initialised) ──────────────────
   const [user, setUser] = useState<User>(() => {
     const current = mockDb.getCurrentUser();
     if (current) return current;
     mockDb.saveCurrentUser(INITIAL_USER);
     return INITIAL_USER;
+  });
+
+  // ─── Admin Session (Real — persisted in localStorage) ─────────────────────
+  const [adminSession, setAdminSession] = useState<AdminSession | null>(() => {
+    const session = mockDb.getCurrentAdminSession();
+    if (session && !isSessionExpired(session)) return session;
+    if (session) mockDb.saveCurrentAdminSession(null); // clear expired
+    return null;
   });
 
   const [addresses, setAddresses] = useState<CustomerAddress[]>(() => {
@@ -109,7 +155,146 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return existing;
   });
 
-  // Profile Updates
+  // ─── Derived auth state ────────────────────────────────────────────────────
+  const isAdmin = adminSession !== null && !isSessionExpired(adminSession);
+  const isAuthenticated = true; // Storefront is publicly accessible
+  const is2faVerified = adminSession?.is2faVerified ?? false;
+
+  // ─── Real Admin Login ──────────────────────────────────────────────────────
+  const adminLogin = useCallback(async (
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; requires2FA?: boolean; message: string; requiresCaptcha?: boolean }> => {
+    const cleanEmail = email.trim().toLowerCase();
+
+    // 1. Rate-limit check
+    const limitStatus = authRateLimiter.check(cleanEmail);
+    if (limitStatus.locked) {
+      logSecurityEvent('AUTH_RATE_LIMITED', {
+        email: cleanEmail,
+        status: 'FAILURE',
+        action: `Admin login locked for ${limitStatus.lockoutSeconds}s`,
+      });
+      return {
+        success: false,
+        requiresCaptcha: true,
+        message: `Account temporarily locked. Try again in ${limitStatus.lockoutSeconds} seconds.`,
+      };
+    }
+
+    // 2. Find admin user
+    const users = mockDb.getUsers();
+    const adminUser = users.find(
+      (u) => u.email.toLowerCase() === cleanEmail && u.role === 'admin'
+    );
+
+    if (!adminUser) {
+      authRateLimiter.recordFailure(cleanEmail);
+      logSecurityEvent('AUTH_LOGIN_FAILURE', {
+        email: cleanEmail,
+        status: 'FAILURE',
+        action: 'Admin login: account not found',
+      });
+      return { success: false, message: 'Invalid email or password.' };
+    }
+
+    // 3. Verify password (PBKDF2 or first-time default)
+    let isValid = false;
+    if (!adminUser.password_hash || !adminUser.password_salt) {
+      // First ever login — accept the default password and immediately hash it
+      if (password === DEFAULT_ADMIN_PASSWORD) {
+        const salt = generateSalt(16);
+        const hash = await hashPassword(password, salt);
+        const updatedUser = { ...adminUser, password_hash: hash, password_salt: salt };
+        mockDb.saveUsers(users.map((u) => (u.user_id === adminUser.user_id ? updatedUser : u)));
+        isValid = true;
+      }
+    } else {
+      isValid = await verifyPassword(password, adminUser.password_hash, adminUser.password_salt);
+    }
+
+    if (!isValid) {
+      const failure = authRateLimiter.recordFailure(cleanEmail);
+      logSecurityEvent('AUTH_LOGIN_FAILURE', {
+        userId: adminUser.user_id,
+        email: cleanEmail,
+        status: 'FAILURE',
+        action: 'Admin login: wrong password',
+      });
+      const remaining = failure.remainingAttempts;
+      return {
+        success: false,
+        requiresCaptcha: failure.requiresCaptcha,
+        message: remaining > 0
+          ? `Invalid email or password. ${remaining} attempt${remaining !== 1 ? 's' : ''} remaining.`
+          : 'Account locked due to too many failed attempts.',
+      };
+    }
+
+    // 4. Success — create and persist session
+    authRateLimiter.reset(cleanEmail);
+    const session = createAdminSession(adminUser, false, false);
+
+    // Store in sessions list + current session
+    const existingSessions = mockDb.getAdminSessions();
+    mockDb.saveAdminSessions([session, ...existingSessions.slice(0, 9)]); // keep last 10
+    mockDb.saveCurrentAdminSession(session);
+    setAdminSession(session);
+
+    logSecurityEvent('AUTH_LOGIN_SUCCESS', {
+      userId: adminUser.user_id,
+      email: cleanEmail,
+      status: 'SUCCESS',
+      action: 'Admin login successful',
+    });
+
+    return { success: true, message: 'Login successful.' };
+  }, []);
+
+  // ─── Admin Logout ──────────────────────────────────────────────────────────
+  const logout = useCallback(() => {
+    if (adminSession) {
+      logSecurityEvent('AUTH_LOGOUT', {
+        userId: adminSession.userId,
+        email: adminSession.email,
+        status: 'SUCCESS',
+        action: 'Admin logout',
+      });
+      mockDb.terminateAdminSession(adminSession.sessionId);
+      mockDb.saveCurrentAdminSession(null);
+    }
+    setAdminSession(null);
+  }, [adminSession]);
+
+  const logoutAllDevices = useCallback(() => {
+    if (adminSession) {
+      logSecurityEvent('AUTH_LOGOUT_ALL', {
+        userId: adminSession.userId,
+        email: adminSession.email,
+        status: 'SUCCESS',
+        action: 'Admin logout all devices',
+      });
+      mockDb.terminateAllAdminSessions();
+    }
+    setAdminSession(null);
+  }, [adminSession]);
+
+  // ─── Session Management ────────────────────────────────────────────────────
+  const getAdminSessions = useCallback(() => mockDb.getAdminSessions(), []);
+
+  const getActiveSessions = useCallback((): (AdminSession | CustomerSession)[] => {
+    return mockDb.getAdminSessions();
+  }, []);
+
+  const terminateSession = useCallback((sessionId: string) => {
+    mockDb.terminateAdminSession(sessionId);
+    if (adminSession?.sessionId === sessionId) {
+      setAdminSession(null);
+      mockDb.saveCurrentAdminSession(null);
+    }
+  }, [adminSession]);
+
+  // ─── Profile Updates ───────────────────────────────────────────────────────
   const updateProfile = useCallback(async (updatedData: Partial<User>): Promise<boolean> => {
     setUser((prev) => {
       const updated = { ...prev, ...updatedData };
@@ -125,7 +310,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { success: true, message: 'Password updated successfully.' };
   }, []);
 
-  // Customer Addresses
+  // ─── Customer Addresses ────────────────────────────────────────────────────
   const getCustomerAddresses = useCallback(() => {
     return mockDb.getCustomerAddresses(user.user_id);
   }, [user.user_id]);
@@ -173,7 +358,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [user.user_id]
   );
 
-  // Saved Payment Methods
+  // ─── Saved Payment Methods ─────────────────────────────────────────────────
   const getSavedPaymentMethods = useCallback(() => {
     return mockDb.getSavedPaymentMethods(user.user_id);
   }, [user.user_id]);
@@ -251,11 +436,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [user.user_id]
   );
 
-  // Legacy & Compatibility Stubs
+  // ─── Storefront Stubs (public access — login not required for browsing) ────
   const login = useCallback(async () => ({ success: true, message: 'Access granted' }), []);
-  const adminLogin = useCallback(async () => ({ success: true, message: 'Access granted' }), []);
-  const logout = useCallback(() => {}, []);
-  const logoutAllDevices = useCallback(() => {}, []);
   const identifyAccount = useCallback((emailOrMobile: string) => ({ exists: true, emailOrMobile }), []);
   const requestRegistration = useCallback(async () => ({ success: true, message: 'Registered' }), []);
   const verifyRegistrationOtp = useCallback(async () => ({ success: true, user, message: 'Verified' }), [user]);
@@ -269,18 +451,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const regenerateRecoveryCodes = useCallback(async () => ({ success: true, message: 'Codes generated' }), []);
   const verify2FALogin = useCallback(async () => ({ success: true, message: 'Verified' }), []);
   const verifyCustomer2FALogin = useCallback(async () => ({ success: true, message: 'Verified' }), []);
-  const getActiveSessions = useCallback(() => [], []);
-  const getAdminSessions = useCallback(() => [], []);
-  const terminateSession = useCallback(() => {}, []);
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        currentSession: null,
-        isAuthenticated: true,
-        isAdmin: true,
-        is2faVerified: true,
+        currentSession: adminSession,
+        isAuthenticated,
+        isAdmin,
+        is2faVerified,
         updateProfile,
         updatePassword,
         getCustomerAddresses,

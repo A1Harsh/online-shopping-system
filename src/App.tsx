@@ -32,6 +32,7 @@ import { PrivacyNoticePage } from './pages/PrivacyNoticePage';
 
 // Admin Suite Pages
 import { AdminLayout } from './pages/admin/AdminLayout';
+import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminProducts } from './pages/admin/AdminProducts';
 import { AdminCategories } from './pages/admin/AdminCategories';
@@ -40,6 +41,8 @@ import { AdminOrders } from './pages/admin/AdminOrders';
 import { AdminReviews } from './pages/admin/AdminReviews';
 import { AdminAnalytics } from './pages/admin/AdminAnalytics';
 import { AdminSettings } from './pages/admin/AdminSettings';
+import { ProtectedAdminRoute } from './components/admin/ProtectedAdminRoute';
+import { APP_STORAGE_KEYS } from './context/AuthContext';
 
 // Scroll to top helper on route change
 const ScrollToTop: React.FC = () => {
@@ -93,7 +96,7 @@ class GlobalErrorBoundary extends React.Component<
             </p>
             <button
               onClick={() => {
-                localStorage.clear();
+                APP_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
                 window.location.href = window.location.origin + window.location.pathname;
               }}
               style={{ backgroundColor: '#4f46e5', color: '#ffffff', padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: 700, border: 'none', cursor: 'pointer' }}
@@ -141,10 +144,10 @@ export const App: React.FC = () => {
                   <Route path="/privacy-policy" element={<StorefrontLayout><PrivacyNoticePage /></StorefrontLayout>} />
                   <Route path="/privacy" element={<StorefrontLayout><PrivacyNoticePage /></StorefrontLayout>} />
 
-                  {/* Admin Portal Routes (Direct Public Access) */}
-                  <Route path="/admin/login" element={<StorefrontLayout><AdminDashboard /></StorefrontLayout>} />
-                  <Route path="/admin-login" element={<StorefrontLayout><AdminDashboard /></StorefrontLayout>} />
-                  <Route path="/admin" element={<AdminLayout />}>
+                  {/* Admin Portal Routes */}
+                  <Route path="/admin/login" element={<AdminLoginPage />} />
+                  <Route path="/admin-login" element={<AdminLoginPage />} />
+                  <Route path="/admin" element={<ProtectedAdminRoute><AdminLayout /></ProtectedAdminRoute>}>
                     <Route index element={<AdminDashboard />} />
                     <Route path="products" element={<AdminProducts />} />
                     <Route path="categories" element={<AdminCategories />} />

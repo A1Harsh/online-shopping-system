@@ -126,19 +126,45 @@ export const mockDb = {
   getWishlist: (): WishlistItem[] => getStorageItem(STORAGE_KEYS.WISHLIST, []),
   saveWishlist: (wishlist: WishlistItem[]): void => setStorageItem(STORAGE_KEYS.WISHLIST, wishlist),
 
-  // ─── Sessions & Profile Compatibility ─────────────────────────────────────
-  getAdminSessions: (): AdminSession[] => [],
-  saveAdminSessions: (): void => {},
-  getCurrentAdminSession: (): AdminSession | null => null,
-  saveCurrentAdminSession: (): void => {},
-  terminateAdminSession: (): void => {},
-  terminateAllAdminSessions: (): void => {},
-  getCustomerSessions: (): CustomerSession[] => [],
-  saveCustomerSessions: (): void => {},
-  getCurrentCustomerSession: (): CustomerSession | null => null,
-  saveCurrentCustomerSession: (): void => {},
-  terminateCustomerSession: (): void => {},
-  terminateAllCustomerSessions: (): void => {},
+  // ─── Admin Session Management ───────────────────────────────────────────────
+  getAdminSessions: (): AdminSession[] =>
+    getStorageItem<AdminSession[]>(STORAGE_KEYS.ADMIN_SESSIONS, []),
+  saveAdminSessions: (sessions: AdminSession[]): void =>
+    setStorageItem(STORAGE_KEYS.ADMIN_SESSIONS, sessions),
+  getCurrentAdminSession: (): AdminSession | null =>
+    getStorageItem<AdminSession | null>(STORAGE_KEYS.CURRENT_ADMIN_SESSION, null),
+  saveCurrentAdminSession: (session: AdminSession | null): void =>
+    setStorageItem(STORAGE_KEYS.CURRENT_ADMIN_SESSION, session),
+  terminateAdminSession: (sessionId: string): void => {
+    const sessions = getStorageItem<AdminSession[]>(STORAGE_KEYS.ADMIN_SESSIONS, []);
+    setStorageItem(STORAGE_KEYS.ADMIN_SESSIONS, sessions.filter((s) => s.sessionId !== sessionId));
+    const current = getStorageItem<AdminSession | null>(STORAGE_KEYS.CURRENT_ADMIN_SESSION, null);
+    if (current?.sessionId === sessionId) setStorageItem(STORAGE_KEYS.CURRENT_ADMIN_SESSION, null);
+  },
+  terminateAllAdminSessions: (): void => {
+    setStorageItem(STORAGE_KEYS.ADMIN_SESSIONS, []);
+    setStorageItem(STORAGE_KEYS.CURRENT_ADMIN_SESSION, null);
+  },
+
+  // ─── Customer Session Management ────────────────────────────────────────────
+  getCustomerSessions: (): CustomerSession[] =>
+    getStorageItem<CustomerSession[]>(STORAGE_KEYS.CUSTOMER_SESSIONS, []),
+  saveCustomerSessions: (sessions: CustomerSession[]): void =>
+    setStorageItem(STORAGE_KEYS.CUSTOMER_SESSIONS, sessions),
+  getCurrentCustomerSession: (): CustomerSession | null =>
+    getStorageItem<CustomerSession | null>(STORAGE_KEYS.CURRENT_CUSTOMER_SESSION, null),
+  saveCurrentCustomerSession: (session: CustomerSession | null): void =>
+    setStorageItem(STORAGE_KEYS.CURRENT_CUSTOMER_SESSION, session),
+  terminateCustomerSession: (sessionId: string): void => {
+    const sessions = getStorageItem<CustomerSession[]>(STORAGE_KEYS.CUSTOMER_SESSIONS, []);
+    setStorageItem(STORAGE_KEYS.CUSTOMER_SESSIONS, sessions.filter((s) => s.sessionId !== sessionId));
+    const current = getStorageItem<CustomerSession | null>(STORAGE_KEYS.CURRENT_CUSTOMER_SESSION, null);
+    if (current?.sessionId === sessionId) setStorageItem(STORAGE_KEYS.CURRENT_CUSTOMER_SESSION, null);
+  },
+  terminateAllCustomerSessions: (): void => {
+    setStorageItem(STORAGE_KEYS.CUSTOMER_SESSIONS, []);
+    setStorageItem(STORAGE_KEYS.CURRENT_CUSTOMER_SESSION, null);
+  },
 
   // ─── Customer Addresses ────────────────────────────────────────────────────
   getCustomerAddresses: (userId?: number): CustomerAddress[] => {
